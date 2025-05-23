@@ -1,3 +1,5 @@
+#!/home/pi/.env/bin/python
+
 import os
 import fcntl
 import struct
@@ -23,12 +25,12 @@ radio.openReadingPipe(1, MY_ADDR)
 radio.startListening()
 
 # --- SETUP TUN DEVICE ---
-TUNSETIFF = 0x400454ca
+TUNSETIFF = 0x400454CA
 IFF_TUN = 0x0001
 IFF_NO_PI = 0x1000
 
-tun = os.open('/dev/net/tun', os.O_RDWR)
-ifr = struct.pack('16sH', b'tun0', IFF_TUN | IFF_NO_PI)
+tun = os.open("/dev/net/tun", os.O_RDWR)
+ifr = struct.pack("16sH", b"tun0", IFF_TUN | IFF_NO_PI)
 fcntl.ioctl(tun, TUNSETIFF, ifr)
 
 # Bring up the tun interface in shell beforehand:
@@ -48,7 +50,7 @@ while True:
         # Send over RF24 in chunks
         radio.stopListening()
         for i in range(0, len(packet), PAYLOAD_SIZE):
-            chunk = packet[i:i+PAYLOAD_SIZE]
+            chunk = packet[i : i + PAYLOAD_SIZE]
             success = radio.write(chunk)
             if not success:
                 print("[!] Radio write failed")
@@ -59,8 +61,6 @@ while True:
         data = b""
         while radio.available():
             data += radio.read(PAYLOAD_SIZE)
-        print("tun", tun)
-        print("data", data)
         os.write(tun, data)
 
     # Sleep a bit to prevent CPU burn
