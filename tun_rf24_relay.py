@@ -61,7 +61,11 @@ while True:
         data = b""
         while radio.available():
             data += radio.read(PAYLOAD_SIZE)
-        os.write(tun, data)
+
+        try:
+            os.write(tun, data)
+        except:
+            print("Invalid package")
 
     # Sleep a bit to prevent CPU burn
     time.sleep(0.01)
