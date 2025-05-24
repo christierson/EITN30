@@ -5,7 +5,7 @@ from utils import socket_safe
 
 
 class Base:
-    def __init__(self, ip="", port=5000):
+    def __init__(self, ip="10.0.0.1", port=5000):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock.bind((ip, port))
         self.sock.listen()
@@ -20,7 +20,7 @@ class Base:
         threading.Thread(target=self._recv_loop, daemon=True).start()
         threading.Thread(target=self._send_loop, daemon=True).start()
 
-    def send_message(self, msg: str):
+    def send(self, msg: str):
         self.send_queue.put(msg)
 
     @socket_safe
@@ -46,3 +46,8 @@ class Base:
         if self.conn:
             self.conn.close()
         self.sock.close()
+
+
+class BaseStation(Base):
+    def __init__():
+        pass
