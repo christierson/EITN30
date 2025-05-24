@@ -10,3 +10,9 @@ data = conn.recv(1024)
 print("Received:", data)
 conn.sendall(b"Hello Mobile Unit!")
 conn.close()
+
+from device import Device
+
+
+class BaseStation(Device):
+    pass
