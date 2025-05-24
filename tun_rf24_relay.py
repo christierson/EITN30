@@ -65,7 +65,7 @@ while True:
         try:
             os.write(tun, data)
         except:
-            print("Invalid package")
+            print("Invalid data:", data)
 
     # Sleep a bit to prevent CPU burn
     time.sleep(0.01)
