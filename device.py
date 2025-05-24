@@ -1,4 +1,6 @@
 import socket
+import threading
+import queue
 import functools
 
 
@@ -18,18 +20,84 @@ def socket_safe(method):
     return wrapper
 
 
+class Device:
+    def __init__(self):
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.send_queue = queue.Queue()
+        self.stop_event = threading.Event()
+        self.recv_thread = None
+        self.send_thread = None
+
+    def start_threads(self):
+        self.recv_thread = threading.Thread(target=self._recv_loop, daemon=True)
+        self.send_thread = threading.Thread(target=self._send_loop, daemon=True)
+        self.recv_thread.start()
+        self.send_thread.start()
+
+    def stop_threads(self):
+        self.stop_event.set()
+        if hasattr(self, "conn") and self.conn:
+            self.conn.close()
+        else:
+            self.sock.close()
+
+    def send(self, msg: str):
+        self.send_queue.put(msg)
+
+    @socket_safe
+    def _send_loop(self):
+        while not self.stop_event.is_set():
+            try:
+                msg = self.send_queue.get(timeout=1)
+                sock = self._active_socket()
+                sock.sendall(msg.encode())
+            except queue.Empty:
+                continue
+
+    @socket_safe
+    def _recv_loop(self):
+        while not self.stop_event.is_set():
+            sock = self._active_socket()
+            try:
+                data = sock.recv(1024)
+                if data:
+                    print(f"[{self.__class__.__name__}] Received:", data.decode())
+                else:
+                    break  # connection closed
+            except OSError:
+                break
+
+    def _active_socket(self):
+        return self.conn if hasattr(self, "conn") and self.conn else self.sock
+
+
 class Mobile:
     def __init__(self, ip):
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        super().__init__()
         self.sock.connect((ip, 5000))
 
     @socket_safe
-    def send(self, msg: str):
-        self.sock.sendall(msg.encode())
+    def _send_loop(self):
+        while not self.stop_event.is_set():
+            try:
+                msg = self.send_queue.get(timeout=1)
+                sock = self._active_socket()
+                sock.sendall(msg.encode())
+            except queue.Empty:
+                continue
 
     @socket_safe
-    def recv(self):
-        return self.sock.recv(1024)
+    def _recv_loop(self):
+        while not self.stop_event.is_set():
+            sock = self._active_socket()
+            try:
+                data = sock.recv(1024)
+                if data:
+                    print(f"[{self.__class__.__name__}] Received:", data.decode())
+                else:
+                    break  # connection closed
+            except OSError:
+                break
 
 
 class Base:
