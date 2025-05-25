@@ -178,11 +178,14 @@ def send_with_ack(packet_chunks):
 
 
 def send_packet(data):
-    print(len(data))
+    print("len(data)", len(data))
     chunks = chunkify(data, MAX_RF_PAYLOAD - 8)
+    print("chunks", chunks)
     total = len(chunks)
+    print("total", total)
     packets = []
     for i, chunk in enumerate(chunks):
+        print("i", i)
         checksum = zlib.crc32(chunk)
         packets.append(
             RFPacket.build(
