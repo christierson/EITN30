@@ -168,7 +168,8 @@ def send_with_ack(packet_chunks):
                         ack = ACKPacket.parse(ack_payload)
                         if ack.ack_id == chunk_id:
                             break
-                    except Exception:
+                    except Exception as e:
+                        print("Error", e)
                         continue
             else:
                 print(f"[!] Retry chunk {chunk_id}")
