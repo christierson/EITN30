@@ -115,6 +115,7 @@ expected_len = None
 
 
 def send_packet(packet):
+    print("sending", packet)
     full_packet = struct.pack("!H", len(packet)) + packet
     radio.stopListening()
     for i in range(0, len(full_packet), PAYLOAD_SIZE):
@@ -133,26 +134,45 @@ while True:
 
     # 2. RF24 -> TUN
     while radio.available():
-        chunk = radio.read(PAYLOAD_SIZE)
-        recv_buffer += chunk
+        recv_buffer += radio.read(PAYLOAD_SIZE)
 
-        while True:
-            if expected_len is None:
-                if len(recv_buffer) >= 2:
-                    expected_len = struct.unpack("!H", recv_buffer[:2])[0]
-                    recv_buffer = recv_buffer[2:]
-                else:
-                    break
+    print("recieved", recv_buffer)
+    # while True:
+    #     if expected_len is None:
+    #         if len(recv_buffer) >= 2:
+    #             expected_len = struct.unpack("!H", recv_buffer[:2])[0]
+    #             recv_buffer = recv_buffer[2:]
+    #         else:
+    #             break
 
-            if expected_len is not None and len(recv_buffer) >= expected_len:
-                packet = recv_buffer[:expected_len]
-                recv_buffer = recv_buffer[expected_len:]
-                expected_len = None
-                try:
-                    os.write(tun, packet)
-                except Exception as e:
-                    print(f"[!] Failed to write to TUN: {e}")
-            else:
-                break
+    #     if expected_len is not None and len(recv_buffer) >= expected_len:
+    #         packet = recv_buffer[:expected_len]
+    #         recv_buffer = recv_buffer[expected_len:]
+    #         expected_len = None
+    #         try:
+    #             os.write(tun, packet)
+    #         except Exception as e:
+    #             print(f"[!] Failed to write to TUN: {e}")
+    #     else:
+    #         break
 
     time.sleep(0.005)
+
+
+recv_buffer = b""
+
+while radio.available():
+    recv_buffer += radio.read(PAYLOAD_SIZE)
+
+while len(recv_buffer) >= 2:
+    packet_len = struct.unpack("!H", recv_buffer[:2])[0]
+    if len(recv_buffer) < 2 + packet_len:
+        # Wait for more data
+        break
+    packet = recv_buffer[2 : 2 + packet_len]
+    recv_buffer = recv_buffer[2 + packet_len :]
+
+    try:
+        os.write(tun, packet)
+    except OSError as e:
+        print(f"[!] Failed to write to TUN: {e}", flush=True)
