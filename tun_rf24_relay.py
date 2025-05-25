@@ -114,9 +114,13 @@ recv_buffer = b""
 expected_len = None
 
 
+def error_response():
+    pass
+
+
 def send_packet(packet):
     print("sending", packet)
-    full_packet = struct.pack("!H", len(packet)) + packet
+    full_packet = len(packet).to_bytes(4, "little") + packet
     radio.stopListening()
     for i in range(0, len(full_packet), PAYLOAD_SIZE):
         chunk = full_packet[i : i + PAYLOAD_SIZE]
@@ -133,8 +137,19 @@ while True:
         send_packet(packet)
 
     # 2. RF24 -> TUN
-    while radio.available():
-        recv_buffer += radio.read(PAYLOAD_SIZE)
+    if radio.available():
+        chunk = radio.read(PAYLOAD_SIZE)
+        if not chunk:
+            break
+        try:
+            length = int.from_bytes(chunk[:4], "little")
+            buffer = chunk[4:]
+            while len(buffer) < length:
+                buffer += radio.read(PAYLOAD_SIZE)
+            print("Received", buffer)
+        except Exception as e:
+            print("Error", e)
+            error_response()
 
     print("recieved", recv_buffer)
     # while True:
