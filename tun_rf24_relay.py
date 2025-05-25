@@ -178,6 +178,7 @@ def send_with_ack(packet_chunks):
 
 
 def send_packet(data):
+    print(len(data))
     chunks = chunkify(data, MAX_RF_PAYLOAD - 8)
     total = len(chunks)
     packets = []
