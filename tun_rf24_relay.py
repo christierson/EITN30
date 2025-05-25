@@ -63,10 +63,10 @@ while True:
             data += radio.read(PAYLOAD_SIZE)
 
         try:
+            print("Writing", data)
             os.write(tun, data)
         except Exception as e:
             print(e)
-            print("Invalid data:", data)
 
     # Sleep a bit to prevent CPU burn
     time.sleep(0.01)
