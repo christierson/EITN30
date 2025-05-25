@@ -119,7 +119,7 @@ def error_response():
 
 
 def send_packet(packet):
-    print("Sending", packet)
+    print("Sending packet of len", len(packet))
     full_packet = len(packet).to_bytes(4, "little") + packet
     radio.stopListening()
     for i in range(0, len(full_packet), PAYLOAD_SIZE):
@@ -143,11 +143,11 @@ while True:
             break
         try:
             length = int.from_bytes(chunk[:4], "little")
+            print("Receiving message of len", length)
             buffer = chunk[4:]
             while len(buffer) < length:
                 buffer += radio.read(PAYLOAD_SIZE)
             try:
-                print("Received", buffer)
                 os.write(tun, buffer)
             except Exception as e:
                 print(f"[!] Failed to write to TUN: {e}")
