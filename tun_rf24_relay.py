@@ -105,13 +105,14 @@ from construct import Struct, Byte, Bytes, Int16ul, Int32ul
 
 # === Protocol Definitions ===
 MAX_RF_PAYLOAD = 32
+MAX_PACKET_DATA = MAX_RF_PAYLOAD - 8
 
 # Each RF packet = [chunk_id:2][total_chunks:2][checksum:4][data:n]
 RFPacket = Struct(
     "chunk_id" / Int16ul,
     "total_chunks" / Int16ul,
     "checksum" / Int32ul,
-    "data" / Bytes(MAX_RF_PAYLOAD - 8),
+    "data" / Bytes(MAX_PACKET_DATA),
 )
 
 ACKPacket = Struct("ack_id" / Int16ul)
@@ -147,7 +148,9 @@ print("[*] Relay running...")
 
 # === Utility ===
 def chunkify(data, chunk_size):
-    return [data[i : i + chunk_size] for i in range(0, len(data), chunk_size)]
+    chunks = [data[i : i + chunk_size] for i in range(0, len(data), chunk_size)]
+    chunks[-1] += bytes(chunk_size - len(chunks[-1]))  # pad last chunk with null bytes
+    return chunks
 
 
 def send_with_ack(packet_chunks):
@@ -178,14 +181,11 @@ def send_with_ack(packet_chunks):
 
 
 def send_packet(data):
-    print("len(data)", len(data))
-    chunks = chunkify(data, MAX_RF_PAYLOAD - 8)
-    print("chunks", chunks)
+    chunks = chunkify(data, MAX_PACKET_DATA)
     total = len(chunks)
-    print("total", total)
     packets = []
     for i, chunk in enumerate(chunks):
-        print("i", i)
+        print(len(chunk))
         checksum = zlib.crc32(chunk)
         packets.append(
             RFPacket.build(
