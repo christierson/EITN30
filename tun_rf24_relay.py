@@ -151,7 +151,6 @@ while True:
             print("Error", e)
             error_response()
 
-    print("recieved", recv_buffer)
     # while True:
     #     if expected_len is None:
     #         if len(recv_buffer) >= 2:
