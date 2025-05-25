@@ -64,7 +64,8 @@ while True:
 
         try:
             os.write(tun, data)
-        except:
+        except Exception as e:
+            print(e)
             print("Invalid data:", data)
 
     # Sleep a bit to prevent CPU burn
