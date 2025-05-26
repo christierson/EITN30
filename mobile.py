@@ -5,17 +5,18 @@ from utils import socket_safe
 
 
 class Mobile:
-    def __init__(self, ip, port=5000):
+    def __init__(self, ip="10.0.0.1", port=5000):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock.connect((ip, port))
         self.send_queue = queue.Queue()
         self.stop_event = threading.Event()
+        self.start()
 
     def start(self):
         threading.Thread(target=self._recv_loop, daemon=True).start()
         threading.Thread(target=self._send_loop, daemon=True).start()
 
-    def send_message(self, msg: str):
+    def send(self, msg: str):
         self.send_queue.put(msg)
 
     @socket_safe

@@ -155,6 +155,7 @@ def chunkify(data, chunk_size):
 
 def send_with_ack(packet_chunks):
     radio.stopListening()
+    print("Sending", packet_chunks)
     for chunk_id, chunk in enumerate(packet_chunks):
         for _ in range(5):  # max retries
             radio.stopListening()
