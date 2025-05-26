@@ -160,6 +160,7 @@ def send_with_ack(packet_chunks):
         for _ in range(5):  # max retries
             radio.stopListening()
             radio.write(chunk)
+            time.sleep(0.005)
             radio.startListening()
             start = time.time()
             while time.time() - start < 0.2:  # wait for ack
