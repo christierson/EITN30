@@ -411,12 +411,19 @@ from queue import Queue, Empty
 # === Protocol Definitions ===
 MAX_RF_PAYLOAD = 32
 
-# Dynamic payload support: remove fixed data size from struct
+# # Dynamic payload support: remove fixed data size from struct
+# RFPacket = Struct(
+#     "chunk_id" / Int16ul,
+#     "total_chunks" / Int16ul,
+#     "checksum" / Int32ul,
+#     "data" / Prefixed(Int16ul, Bytes(lambda ctx: ctx._.data_len)),
+# )
+
 RFPacket = Struct(
     "chunk_id" / Int16ul,
     "total_chunks" / Int16ul,
     "checksum" / Int32ul,
-    "data" / Prefixed(Int16ul, Bytes(lambda ctx: ctx._.data_len)),
+    "data" / Prefixed(Int16ul, Bytes(lambda ctx: len(ctx.data))),
 )
 
 ACKPacket = Struct("ack_id" / Int16ul)
@@ -508,17 +515,10 @@ def send_packet(data):
     packets = []
     for i, chunk in enumerate(chunks):
         checksum = zlib.crc32(chunk)
-        packets.append(
-            RFPacket.build(
-                {
-                    "chunk_id": i,
-                    "total_chunks": total,
-                    "checksum": checksum,
-                    "data": chunk,
-                    "data_len": len(chunk),
-                }
-            )
+        packet = RFPacket.build(
+            {"chunk_id": i, "total_chunks": total, "checksum": checksum, "data": chunk}
         )
+        packets.append(packet)
     send_with_ack(packets)
 
 
