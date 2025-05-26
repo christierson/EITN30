@@ -457,8 +457,12 @@ recv_total = None
 
 
 # === Utility Functions ===
+# def chunkify(data, chunk_size):
+#     return [data[i : i + chunk_size] for i in range(0, len(data), chunk_size)]
 def chunkify(data, chunk_size):
-    return [data[i : i + chunk_size] for i in range(0, len(data), chunk_size)]
+    chunks = [data[i : i + chunk_size] for i in range(0, len(data), chunk_size)]
+    chunks[-1] += bytes(chunk_size - len(chunks[-1]))  # pad last chunk
+    return chunks
 
 
 def send_with_ack(packet_chunks):
