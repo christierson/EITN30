@@ -102,6 +102,9 @@ import select
 import zlib
 from pyrf24 import RF24, RF24_PA_LOW
 from construct import Struct, Byte, Bytes, Int16ul, Int32ul
+from queue import Queue, Empty
+import threading
+
 
 # === Protocol Definitions ===
 MAX_RF_PAYLOAD = 32
@@ -142,6 +145,24 @@ IFF_NO_PI = 0x1000
 tun = os.open("/dev/net/tun", os.O_RDWR)
 ifr = struct.pack("16sH", b"tun0", IFF_TUN | IFF_NO_PI)
 fcntl.ioctl(tun, TUNSETIFF, ifr)
+
+
+tx_queue = Queue(maxsize=100)
+
+
+def tx_worker():
+    while True:
+        try:
+            pkt = tx_queue.get(timeout=1)
+            send_packet(pkt)
+        except Empty:
+            continue
+        except Exception as e:
+            print(f"[!] TX Worker error: {e}")
+
+
+tx_thread = threading.Thread(target=tx_worker, daemon=True)
+tx_thread.start()
 
 print("[*] Relay running...")
 
@@ -243,7 +264,10 @@ while True:
     if tun in rlist:
         try:
             packet = os.read(tun, 1500)
-            send_packet(packet)
+            try:
+                tx_queue.put_nowait(packet)
+            except:
+                print("[!] Dropped packet due to full TX queue")
         except Exception as e:
             print(f"[!] Error reading TUN: {e}")
 
