@@ -628,17 +628,19 @@ MAX_RETRIES = 5
 IS_BASE = os.getenv("IS_BASE", "false").lower() == "true"
 MY_ADDR = b"1Node" if IS_BASE else b"2Node"
 PEER_ADDR = b"2Node" if IS_BASE else b"1Node"
-TX_PIN = 17
-RX_PIN = 27
+TX_CE = 17
+TX_CSN = 8
+RX_CE = 27
+RX_CSN = 18
 
 
 class RF24ReliableInterface:
     def __init__(
         self,
-        tx_ce=TX_PIN,
-        rx_ce=RX_PIN,
-        tx_csn=8,
-        rx_csn=16,
+        tx_ce=TX_CE,
+        rx_ce=RX_CE,
+        tx_csn=TX_CSN,
+        rx_csn=RX_CSN,
         tx_addr=MY_ADDR,
         rx_addr=PEER_ADDR,
     ):
