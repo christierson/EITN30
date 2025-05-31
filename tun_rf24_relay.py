@@ -645,8 +645,8 @@ class RF24ReliableInterface:
         rx_addr=PEER_ADDR,
     ):
 
-        self.tx_radio = RF24(tx_ce, tx_csn, spi_bus=0, spi_device=0)
-        self.rx_radio = RF24(rx_ce, rx_csn, spi_bus=1, spi_device=0)
+        self.tx_radio = RF24(tx_ce, tx_csn)
+        self.rx_radio = RF24(rx_ce, rx_csn)
         self.tx_addr = tx_addr
         self.rx_addr = rx_addr
 
