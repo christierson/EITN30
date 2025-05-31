@@ -757,7 +757,7 @@ class RF24ReliableInterface:
         return chunks
 
 
-rf = RF24ReliableInterface(tx_ce=17, rx_ce=27, tx_addr=b"2Node", rx_addr=b"1Node")
+rf = RF24ReliableInterface()
 
 # === Setup TUN Interface ===
 TUNSETIFF = 0x400454CA
