@@ -404,8 +404,9 @@ import busio
 from circuitpython_nrf24l01.rf24 import RF24
 
 spi = busio.SPI(board.SCK, MOSI=board.MOSI, MISO=board.MISO)
-csn = digitalio.DigitalInOut(board.CE1)  # or board.CE0
-ce = digitalio.DigitalInOut(board.D25)  # Replace with your CE pin
+
+csn = digitalio.DigitalInOut(board.CE0)  # or board.CE0
+ce = digitalio.DigitalInOut(board.D17)  # Replace with your CE pin
 
 radio = RF24(spi, csn, ce)
 if not radio.begin():
