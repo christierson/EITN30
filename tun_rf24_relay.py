@@ -634,10 +634,17 @@ RX_PIN = 27
 
 class RF24ReliableInterface:
     def __init__(
-        self, tx_ce=TX_PIN, rx_ce=RX_PIN, csn=0, tx_addr=MY_ADDR, rx_addr=PEER_ADDR
+        self,
+        tx_ce=TX_PIN,
+        rx_ce=RX_PIN,
+        tx_csn=8,
+        rx_csn=16,
+        tx_addr=MY_ADDR,
+        rx_addr=PEER_ADDR,
     ):
-        self.tx_radio = RF24(tx_ce, csn)
-        self.rx_radio = RF24(rx_ce, csn)
+
+        self.tx_radio = RF24(tx_ce, tx_csn, spi_bus=0, spi_device=0)
+        self.rx_radio = RF24(rx_ce, rx_csn, spi_bus=1, spi_device=0)
         self.tx_addr = tx_addr
         self.rx_addr = rx_addr
 
