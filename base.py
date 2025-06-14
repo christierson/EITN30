@@ -11,12 +11,12 @@ def is_weather_good(data: dict) -> bool:
     return temp_ok and humidity_ok and wind_ok and rain_ok
 
 
-def on_data(data: bytes, addr, comm: UDPInterface):
+def on_data(data: dict, addr, comm: UDPInterface):
     try:
-        message = json.loads(data.decode())
-        print(f"Received from {addr}: {message}")
+        # message = json.loads(data.decode())
+        print(f"Received from {addr}: {data}")
 
-        if is_weather_good(message):
+        if is_weather_good(data):
             response = "Weather is good"
         else:
             response = "Weather is bad"
