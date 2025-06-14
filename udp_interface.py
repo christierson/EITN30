@@ -111,13 +111,9 @@ class UDPInterface:
         if total_len <= MAX_UDP_PACKET_SIZE:
             self.sock.sendto(b"0|1|" + json_bytes, (self.remote_ip, self.remote_port))
         else:
-            # num_chunks = math.ceil(total_len / MAX_UDP_PACKET_SIZE)
-            num_chunks = math.ceil(len(json_bytes) / MAX_PAYLOAD_SIZE)
+            num_chunks = math.ceil(total_len / MAX_PAYLOAD_SIZE)
             for i in range(num_chunks):
                 print(f"sending chunk {i}")
-                # chunk = json_bytes[
-                #     i * MAX_UDP_PACKET_SIZE : (i + 1) * MAX_UDP_PACKET_SIZE
-                # ]
                 chunk = json_bytes[i * MAX_PAYLOAD_SIZE : (i + 1) * MAX_PAYLOAD_SIZE]
                 header = f"{i}|{num_chunks}|".encode()
                 self.sock.sendto(header + chunk, (self.remote_ip, self.remote_port))
