@@ -112,6 +112,7 @@ class UDPInterface:
         else:
             num_chunks = math.ceil(total_len / MAX_UDP_PACKET_SIZE)
             for i in range(num_chunks):
+                print(f"sending chunk {i}")
                 chunk = json_bytes[
                     i * MAX_UDP_PACKET_SIZE : (i + 1) * MAX_UDP_PACKET_SIZE
                 ]
