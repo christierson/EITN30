@@ -21,7 +21,7 @@ def on_data(data: dict, addr, comm: UDPInterface):
         else:
             response = "Weather is bad"
 
-        comm.send(response.encode(), addr)
+        comm.send({"message": response})
         print(f"Replied to {addr} with: {response}")
     except Exception as e:
         print(f"Error handling message from {addr}: {e}")
