@@ -1,5 +1,5 @@
 from time import sleep
-from device import UdpDevice
+from udp_interface import UdpDevice
 
 
 def handle_message(data, addr):

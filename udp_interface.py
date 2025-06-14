@@ -4,23 +4,23 @@ import socket
 import threading
 
 
-class UdpDevice:
+class UDPInterface:
     def __init__(
-        self, local_port: int, remote_port: int, config_path="device_config.json"
+        self,
+        local_port: int = 5005,
+        remote_port: int = 5005,
+        config_path="device_config.json",
     ):
         self.local_port = local_port
         self.remote_port = remote_port
 
-        # Determine role
         is_base = os.getenv("IS_BASE", "false").lower() == "true"
         self.role = "base" if is_base else "mobile"
         self.peer_role = "mobile" if is_base else "base"
 
-        # Load config
         with open(config_path, "r") as f:
             config = json.load(f)
 
-        # Get IPs from config
         self.local_ip = config[self.role]["ip"]
         self.remote_ip = config[self.peer_role]["ip"]
 
@@ -28,13 +28,12 @@ class UdpDevice:
             f"[UDP] Role: {self.role.upper()}, Local IP: {self.local_ip}, Remote IP: {self.remote_ip}"
         )
 
-        # Set up socket
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sock.bind((self.local_ip, self.local_port))
 
         self.running = False
         self.receiver_thread = None
-        self.on_receive = None  # Optional callback
+        self.on_receive = None
 
     def send(self, data: bytes):
         self.sock.sendto(data, (self.remote_ip, self.remote_port))
