@@ -4,6 +4,9 @@ import random
 from udp_interface import UDPInterface
 import requests
 
+LATITUDE = 55.711147
+LONGITUDE = 13.209260
+
 
 def load_config():
     with open("device_config.json", "r") as f:
@@ -24,7 +27,7 @@ def get_dummy_weather_data():
     }
 
 
-def get_weather(latitude=52.52, longitude=13.405):  # Default: Berlin
+def get_weather(latitude=LATITUDE, longitude=LONGITUDE):
     url = (
         f"https://api.open-meteo.com/v1/forecast"
         f"?latitude={latitude}&longitude={longitude}"
