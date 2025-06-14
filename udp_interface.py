@@ -67,7 +67,7 @@ import socket
 import threading
 import math
 
-MAX_UDP_PACKET_SIZE = 1024  # bytes per packet
+MAX_UDP_PACKET_SIZE = 32  # bytes per packet
 
 
 class UDPInterface:
