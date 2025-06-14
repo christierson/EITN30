@@ -1,6 +1,0 @@
-pandas
-matplotlib
-pyrf24
-python-pytun
-zstd
-construct
