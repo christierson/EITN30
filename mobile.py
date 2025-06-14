@@ -8,11 +8,6 @@ LATITUDE = 55.711147
 LONGITUDE = 13.209260
 
 
-def load_config():
-    with open("device_config.json", "r") as f:
-        return json.load(f)
-
-
 def get_dummy_sensor_data():
     return {
         "temperature": round(random.uniform(20, 30), 2),

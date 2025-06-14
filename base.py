@@ -1,4 +1,3 @@
-import json
 from udp_interface import UDPInterface
 
 
