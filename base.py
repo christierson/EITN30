@@ -3,7 +3,6 @@ from udp_interface import UDPInterface
 
 
 def is_weather_good(data: dict) -> bool:
-    # Define your rules here
     temp_ok = 18 <= data.get("temperature", 0) <= 30
     humidity_ok = 30 <= data.get("humidity", 100)
     wind_ok = data.get("wind_speed", 100) < 8
@@ -13,7 +12,6 @@ def is_weather_good(data: dict) -> bool:
 
 def on_data(data: dict, addr, comm: UDPInterface):
     try:
-        # message = json.loads(data.decode())
         print(f"Received from {addr}: {data}")
 
         if is_weather_good(data):
@@ -35,7 +33,7 @@ def main():
     print("Base station listening for weather data...")
     try:
         while True:
-            pass  # Just keeping the main thread alive
+            pass
     except KeyboardInterrupt:
         comm.stop()
         print("\nStopped base station.")

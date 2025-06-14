@@ -1,7 +1,7 @@
 import json
 import time
 import random
-from udp_interface import UDPInterface  # assuming this is your communication module
+from udp_interface import UDPInterface
 
 
 def load_config():
@@ -10,7 +10,6 @@ def load_config():
 
 
 def get_dummy_sensor_data():
-    # Replace with real DHT22 readings later
     return {
         "temperature": round(random.uniform(20, 30), 2),
         "humidity": round(random.uniform(30, 70), 2),
@@ -18,7 +17,6 @@ def get_dummy_sensor_data():
 
 
 def get_dummy_weather_data():
-    # Replace with real web API call later
     return {
         "wind_speed": round(random.uniform(1, 10), 2),
         "precipitation": round(random.uniform(0, 5), 2),

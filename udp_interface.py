@@ -103,7 +103,6 @@ class UDPInterface:
         self.reassembly_buffer = {}
 
     def send(self, data: dict):
-        """Encode dict as JSON and send (with chunking if needed)."""
         json_bytes = json.dumps(data).encode()
         total_len = len(json_bytes)
 
@@ -134,7 +133,7 @@ class UDPInterface:
     def _listen_loop(self):
         while self.running:
             try:
-                data, addr = self.sock.recvfrom(2048)
+                data, addr = self.sock.recvfrom(MAX_UDP_PACKET_SIZE)
                 chunk_idx, total_chunks, chunk_data = self._parse_chunk_header(data)
                 if chunk_idx is None:
                     continue
@@ -159,7 +158,6 @@ class UDPInterface:
                 print(f"[UDP ERROR] {e}")
 
     def start_listening(self, on_receive_callback):
-        """Register callback that receives decoded dict and sender address."""
         self.on_receive = on_receive_callback
         self.running = True
         self.receiver_thread = threading.Thread(target=self._listen_loop, daemon=True)
